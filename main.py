@@ -93,8 +93,16 @@ class Tank:
             self.x-=1
             self.init_sprite()
 
-
-
+    def get_figure(self):
+        if self.direction==0:
+            return self.draw_up
+        if self.direction==1:
+            return self.draw_right
+        if self.direction==2:
+            return self.draw_down
+        if self.direction==3:
+            return self.draw_left
+        
     def shoot(self):
         return Projectile(self.direction, self.x, self.y)
         # return self.x, self.y, self.direction # возвращаем позицию выстрела и направление
@@ -138,7 +146,7 @@ if __name__=='__main__':
     while play:
 
         if keyboard.is_pressed('up'):
-            my_tank=t1.draw_up
+            my_tank=t1.get_figure()
             t1.go()
 
         if keyboard.is_pressed('down'):
@@ -146,17 +154,19 @@ if __name__=='__main__':
             # t1.move('down')
 
         if keyboard.is_pressed('left'):
-            my_tank=t1.draw_left
+
             rule-=1
             if rule==-1:
                 rule=3
             t1.direction=rule
+            my_tank=t1.get_figure()
             # t1.move('left')
 
         if keyboard.is_pressed('right'):
-            my_tank=t1.draw_right # отображение танка
-            rule=(rule+1)%3
+
+            rule=(rule+1)%4
             t1.direction=rule
+            my_tank=t1.get_figure() # отображение танка
             # t1.move('right') # изменение отображения танка
 
         if keyboard.is_pressed('space'):
