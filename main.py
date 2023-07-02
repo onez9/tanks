@@ -74,23 +74,23 @@ class Tank:
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x-2, self.y-1))
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x-2, self.y+1))
     
-    def go(self):
+    def go(self, forward=1):
         # if self.x>=1 and self.x<=15 and self.y>=1 and self.y<=16:
         
         if self.direction==0 and self.y>=2:
-            self.y-=1
+            self.y-=forward
             self.init_sprite()
 
         if self.direction==1 and self.x<=self.mw-3:
-            self.x+=1
+            self.x+=forward
             self.init_sprite()
 
         if self.direction==2 and self.y<=self.mh-3:
-            self.y+=1
+            self.y+=forward
             self.init_sprite()
 
         if self.direction==3 and self.x>=2:
-            self.x-=1
+            self.x-=forward
             self.init_sprite()
 
     def get_figure(self):
@@ -150,8 +150,8 @@ if __name__=='__main__':
             t1.go()
 
         if keyboard.is_pressed('down'):
-            my_tank=t1.draw_down
-            # t1.move('down')
+            my_tank=t1.get_figure()
+            t1.go(forward=-1)
 
         if keyboard.is_pressed('left'):
 
