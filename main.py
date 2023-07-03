@@ -95,6 +95,10 @@ class Tank:
         self.init_sprite()
         self.angle=0
 
+        self.f1i=...
+        self.f2i=...
+        self.r1i=...
+
     def init_sprite(self):
         # up
         self.draw_up=[
@@ -133,16 +137,57 @@ class Tank:
             (( self.x-1, self.y+1))
         ]
     
+    def get_info(self):
+        if self.angle==0:
+            # self.f1i=f'({self.y-1}, {self.x-1}):{self.map.battlefield[self.y-1][self.x-1]}'
+            # self.f2i=f'({self.y-1}, {self.x+1}):{self.map.battlefield[self.y-1][self.x+1]}'
+            # self.r1i=f'({self.y+1}, {self.x})  :{self.map.battlefield[self.y+1][self.x]}'
+
+            self.f1i=self.map.battlefield[self.y-1][self.x-1]
+            self.f2i=self.map.battlefield[self.y-1][self.x+1]
+            self.r1i=self.map.battlefield[self.y+1][self.x]
+
+        elif self.angle==1:
+            # self.f1i=f'({self.y-1}, {self.x+1}):{self.map.battlefield[self.y-1][self.x+1]}'
+            # self.f2i=f'({self.y+1}, {self.x+1}):{self.map.battlefield[self.y+1][self.x+1]}'
+            # self.r1i=f'({self.y}, {self.x-1})  :{self.map.battlefield[self.y][self.x-1]}'
+
+            self.f1i=self.map.battlefield[self.y-1][self.x+1]
+            self.f2i=self.map.battlefield[self.y+1][self.x+1]
+            self.r1i=self.map.battlefield[self.y][self.x-1]
+
+        elif self.angle==2:
+            # self.f1i=f'({self.y+1}, {self.x-1}):{self.map.battlefield[self.y+1][self.x-1]}'
+            # self.f2i=f'({self.y+1}, {self.x+1}):{self.map.battlefield[self.y+1][self.x+1]}'
+            # self.r1i=f'({self.y-1}, {self.x})  :{self.map.battlefield[self.y-1][self.x]}'
+
+            self.f1i=self.map.battlefield[self.y+1][self.x-1]
+            self.f2i=self.map.battlefield[self.y+1][self.x+1]
+            self.r1i=self.map.battlefield[self.y-1][self.x]
+
+        else:
+            # self.f1i=f'({self.y-1}, {self.x-1}):{self.map.battlefield[self.y-1][self.x-1]}'
+            # self.f2i=f'({self.y+1}, {self.x-1}):{self.map.battlefield[self.y+1][self.x-1]}'
+            # self.r1i=f'({self.y}, {self.x+1})  :{self.map.battlefield[self.y][self.x+1]}'
+
+            self.f1i=self.map.battlefield[self.y-1][self.x-1]
+            self.f2i=self.map.battlefield[self.y+1][self.x-1]
+            self.r1i=self.map.battlefield[self.y][self.x+1]
 
     def left(self):
-        self.angle-=1
-        if self.angle==-1:
-            self.angle=3
-        self.direction=self.angle
+        if self.f1i=='.' and self.f2i=='.' and self.r1i=='.':
+            self.angle-=1
+            if self.angle==-1:
+                self.angle=3
+            
+            self.get_info()
+            self.direction=self.angle
 
     def right(self):
-        self.angle=(self.angle+1)%4
-        self.direction=self.angle
+        if self.f1i=='.' and self.f2i=='.' and self.r1i=='.':
+            self.angle=(self.angle+1)%4
+            self.get_info()
+            self.direction=self.angle
 
     def go(self, forward:int=1): # педаль газа
         # if self.x>=1 and self.x<=15 and self.y>=1 and self.y<=16:
@@ -202,6 +247,8 @@ class Tank:
                 if self.x<self.mw-2 and self.map.battlefield[self.y][self.x+1]=='.' and self.map.battlefield[self.y-1][self.x+2]=='.' and self.map.battlefield[self.y+1][self.x+2]=='.':
                     self.x-=forward
                     self.init_sprite()
+        
+        self.get_info()
 
     def get_figure(self):
         if self.direction==0:
@@ -229,54 +276,30 @@ class Game:
         self.map=Map()
         self.b1=Block(self.map, 10, 0)
         self.t1=Tank(self.map, self.b1)
-        self.def_image_tank=self.t1.draw_up
-        # self.direction=...
-        self.p1=None
-        # self.whizzbangs=[]
         self.flameshots=[]
-        # self.rule=0
         self.FPS=15
-        # blocks=[]
-
-        # blocks.append(Block(0, 0))
-        # blocks.append(Block(17, 0))
         self.run=True
 
     def play(self):
         while self.run:
-
-
             # отрисовка преград
             self.b1.draw()
 
             # вперёд 
             if keyboard.is_pressed('up'):
-                # self.def_image_tank=self.t1.get_figure()
                 self.t1.go(forward=1)
-
+            
             # назад
             if keyboard.is_pressed('down'):
-                # self.def_image_tank=self.t1.get_figure()
                 self.t1.go(forward=-1)
 
             # поворот налево
             if keyboard.is_pressed('left'):
-                # self.rule-=1
-                # if self.rule==-1:
-                #     self.rule=3
-                # self.t1.direction=self.rule
                 self.t1.left()
-                # self.def_image_tank=self.t1.get_figure()
-                # t1.move('left')
 
             # поворот направо
             if keyboard.is_pressed('right'):
-
-                # self.rule=(self.rule+1)%4
-                # self.t1.direction=self.rule
                 self.t1.right()
-                # self.def_image_tank=self.t1.get_figure() # отображение танка
-                # t1.move('right') # изменение отображения танка
 
             if keyboard.is_pressed('space'):
                 # projectile = t1.projectile
@@ -288,21 +311,12 @@ class Game:
 
             # отрисовка всех точек танка на карте
             self.t1.draw()
-            # отрисовка всех преград на карте
-            # for block in blocks:
-            #     if block is not None:
-            #         for x, y in block.show():
-            #             map[y][x]='%'
 
             # отрисовка снаряда
             for i in range(len(self.flameshots)):
                 if self.flameshots[i] is not None:
                     xs, ys = self.flameshots[i].get_position()
                     if xs>=0 and xs<self.map.w and ys>=0 and ys<self.map.h:
-                        # for block in blocks:
-                            # if block is not None:
-                                # if (xs, ys) in block.show():
-                                #     block = None
                         if self.map.battlefield[ys][xs]=='%':
                             #self.map.battlefield[ys][xs]='.'
                             logging.warning(f'{self.b1.blocks}')
@@ -321,8 +335,8 @@ class Game:
 
             # отрисовка карты
             self.map.show()
-            logging.debug(f'{self.t1.x}, {self.t1.y}, {self.b1.blocks}')
-
+            logging.debug(f'{self.t1.x}, {self.t1.y}, {self.b1.blocks}, {self.t1.direction}')
+            logging.debug(f'{self.t1.angle}, {self.t1.f1i}, {self.t1.f2i}, {self.t1.r1i}')
 
             # self.map=copy.deepcopy(self.map_clear)
             self.map.update()
@@ -333,6 +347,6 @@ cls=lambda: os.system('clear')
 
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.CRITICAL)
+    logging.basicConfig(level=logging.DEBUG)
     Game().play()
 
