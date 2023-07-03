@@ -284,14 +284,14 @@ class Game:
 
 
         self.enemies=[]
-        self.t2=Tank(self.map, (1,1), self.b1)
-        self.t3=Tank(self.map, (self.map.w-2,1), self.b1)
+        self.t2=Tank(self.map, (1,4), self.b1)
+        self.t3=Tank(self.map, (self.map.w-2,4), self.b1)
 
         self.enemies.append(self.t2)
         self.enemies.append(self.t3)
 
         self.flameshots=[]
-        self.FPS=15
+        self.FPS=10
         self.run=True
 
     def play(self):
@@ -310,11 +310,11 @@ class Game:
             if keyboard.is_pressed('down'):
                 self.t1.go(forward=-1)
 
-            # поворот налево
+            # поворот влево
             if keyboard.is_pressed('left'):
                 self.t1.left()
 
-            # поворот направо
+            # поворот вправо
             if keyboard.is_pressed('right'):
                 self.t1.right()
 
@@ -348,12 +348,13 @@ class Game:
                             # self.b1.blocks.remove((xs, ys))
 
 
-                            for i in range(len(self.enemies)):
-                                if (xs,ys) in self.enemies[i].get_figure():
-                                    self.enemies[i].health-=1
-                                    if self.enemies[i].health==0:
-                                        self.enemies[i]=None
-                                    break
+                            for k in range(len(self.enemies)):
+                                if self.enemies[k] is not None:
+                                    if (xs,ys) in self.enemies[k].get_figure():
+                                        self.enemies[k].health-=1
+                                        if self.enemies[k].health==0:
+                                            self.enemies[k]=None
+                                        break
                             
                             logging.warning(f'ys: {ys}, xs: {xs}')
                             self.flameshots[i]=None
@@ -380,6 +381,6 @@ cls=lambda: os.system('clear')
 
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.CRITICAL)
     Game().play()
 
