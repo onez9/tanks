@@ -38,41 +38,41 @@ class Tank:
         self.draw_up.append(( self.x,   (-1 if self.y==self.mh-2 else 0) + self.y))
         self.draw_up.append(( self.x-1, (-1 if self.y==self.mh-2 else 0) + self.y))
         self.draw_up.append(( self.x+1, (-1 if self.y==self.mh-2 else 0) + self.y))
-        self.draw_up.append(( self.x,   (-1 if self.y==self.mh-2 else 0) + self.y+1))
+        # self.draw_up.append(( self.x,   (-1 if self.y==self.mh-2 else 0) + self.y+1))
         self.draw_up.append(( self.x-1, (-1 if self.y==self.mh-2 else 0) + self.y+1))
         self.draw_up.append(( self.x+1, (-1 if self.y==self.mh-2 else 0) + self.y+1))
-        self.draw_up.append(( self.x-1, (-1 if self.y==self.mh-2 else 0) + self.y+2))
-        self.draw_up.append(( self.x+1, (-1 if self.y==self.mh-2 else 0) + self.y+2))
+        # self.draw_up.append(( self.x-1, (-1 if self.y==self.mh-2 else 0) + self.y+2))
+        # self.draw_up.append(( self.x+1, (-1 if self.y==self.mh-2 else 0) + self.y+2))
         # down
         self.draw_down.append(( self.x,   (1 if self.y==1 else 0) + self.y+1))
         self.draw_down.append(( self.x,   (1 if self.y==1 else 0) + self.y))
         self.draw_down.append(( self.x-1, (1 if self.y==1 else 0) + self.y))
         self.draw_down.append(( self.x+1, (1 if self.y==1 else 0) + self.y))
-        self.draw_down.append(( self.x,   (1 if self.y==1 else 0) + self.y-1))
+        # self.draw_down.append(( self.x,   (1 if self.y==1 else 0) + self.y-1))
         self.draw_down.append(( self.x-1, (1 if self.y==1 else 0) + self.y-1))
         self.draw_down.append(( self.x+1, (1 if self.y==1 else 0) + self.y-1))
-        self.draw_down.append(( self.x-1, (1 if self.y==1 else 0) + self.y-2))
-        self.draw_down.append(( self.x+1, (1 if self.y==1 else 0) + self.y-2))
+        # self.draw_down.append(( self.x-1, (1 if self.y==1 else 0) + self.y-2))
+        # self.draw_down.append(( self.x+1, (1 if self.y==1 else 0) + self.y-2))
         # left
         self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x-1, self.y))
         self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x,   self.y))
         self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x,   self.y-1))
         self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x,   self.y+1))
         self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+1, self.y-1))
-        self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+1, self.y))
+        # self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+1, self.y))
         self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+1, self.y+1))
-        self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+2, self.y-1))
-        self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+2, self.y+1))
+        # self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+2, self.y-1))
+        # self.draw_left.append(( (-1 if self.x==self.mw-2 else 0) + self.x+2, self.y+1))
         # right
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x+1, self.y))
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x,   self.y))
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x,   self.y-1))
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x,   self.y+1))
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x-1, self.y-1))
-        self.draw_right.append(( (1 if self.x==1 else 0) + self.x-1, self.y))
+        # self.draw_right.append(( (1 if self.x==1 else 0) + self.x-1, self.y))
         self.draw_right.append(( (1 if self.x==1 else 0) + self.x-1, self.y+1))
-        self.draw_right.append(( (1 if self.x==1 else 0) + self.x-2, self.y-1))
-        self.draw_right.append(( (1 if self.x==1 else 0) + self.x-2, self.y+1))
+        # self.draw_right.append(( (1 if self.x==1 else 0) + self.x-2, self.y-1))
+        # self.draw_right.append(( (1 if self.x==1 else 0) + self.x-2, self.y+1))
     
     def go(self, forward=1):
         # if self.x>=1 and self.x<=15 and self.y>=1 and self.y<=16:
@@ -121,87 +121,118 @@ class Projectile:
 
         return self.x, self.y
     
+class Block:
+    def __init__(self, x, y):
+        self.x=y
+        self.y=y
+        self.blocks=[]
     
+    def show(self):
+        self.blocks.append((self.x, self.y))
+        self.blocks.append((self.x, self.y+1))
+        self.blocks.append((self.x, self.y+2))
+        self.blocks.append((self.x, self.y+3))
+        self.blocks.append((self.x, self.y+4))
 
+        return self.blocks
+
+class Game:
+    def __init__(self, w=20, h=20):
+        self.w=w
+        self.h=h
+        self.map=[['-' for _ in range(self.w)] for _ in range(self.h)]
+        self.map_clear = copy.deepcopy(self.map)
+        self.run=True
+
+        self.direction=...
+        self.t1=Tank(w//2, h//2, w, h)
+        self.def_image_tank=self.t1.draw_up
+        self.p1=None
+        self.whizzbangs=[]
+        self.rule=0
+        # blocks=[]
+        # blocks.append(Block(0, 0))
+        # blocks.append(Block(17, 0))
+
+
+    def play(self):
+        while self.run:
+            # вперёд 
+            if keyboard.is_pressed('up'):
+                self.def_image_tank=self.t1.get_figure()
+                self.t1.go()
+
+            # назад
+            if keyboard.is_pressed('down'):
+                self.def_image_tank=self.t1.get_figure()
+                self.t1.go(forward=-1)
+
+            # поворот налево
+            if keyboard.is_pressed('left'):
+                self.rule-=1
+                if self.rule==-1:
+                    self.rule=3
+                self.t1.direction=self.rule
+                self.def_image_tank=self.t1.get_figure()
+                # t1.move('left')
+
+            # поворот направо
+            if keyboard.is_pressed('right'):
+
+                self.rule=(self.rule+1)%4
+                self.t1.direction=self.rule
+                self.def_image_tank=self.t1.get_figure() # отображение танка
+                # t1.move('right') # изменение отображения танка
+
+            if keyboard.is_pressed('space'):
+                # projectile = t1.projectile
+                self.whizzbangs.append(self.t1.shoot())
+
+
+
+            # отрисовка всех точек танка на карте
+            for x, y in self.def_image_tank:
+                self.map[y][x]='#'
+            
+            # отрисовка всех преград на карте
+            # for block in blocks:
+            #     if block is not None:
+            #         for x, y in block.show():
+            #             map[y][x]='%'
+
+            # отрисовка снаряда
+            for packet in self.whizzbangs:
+                if packet is not None:
+                    xs, ys = packet.get_position()
+                    try:
+
+                        if xs>=0 and xs<self.w and ys>=0 and ys<self.h:
+                            # for block in blocks:
+                                # if block is not None:
+                                    # if (xs, ys) in block.show():
+                                    #     block = None
+                            self.map[ys][xs]='@'
+                        else:
+                            packet=None
+                    except Exception as e:
+                        print(xs, ys)
+                        print(e)
+
+
+
+            # отрисовка карты
+            for l in self.map:
+                print(*l)
+
+            self.map=copy.deepcopy(self.map_clear)
+            time.sleep(0.06)
+            cls()
 
 cls=lambda: os.system('clear')
 
 
 if __name__=='__main__':
-    w=40;h=40
+    # w=20;h=20
 
-    map=[['-' for _ in range(w)] for _ in range(h)]
+    Game(13, 13).play()
 
-    map_clear = copy.deepcopy(map)
-    x_shoot=...
-    y_shoot=...
-    direction=...
-    t1=Tank(w//2, h//2, w, h)
-    my_tank=t1.draw_up
-    play = True
-    p1=None
-    whizzbangs=[]
-    rule=0
-    # try:
-    while play:
-
-        if keyboard.is_pressed('up'):
-            my_tank=t1.get_figure()
-            t1.go()
-
-        if keyboard.is_pressed('down'):
-            my_tank=t1.get_figure()
-            t1.go(forward=-1)
-
-        if keyboard.is_pressed('left'):
-
-            rule-=1
-            if rule==-1:
-                rule=3
-            t1.direction=rule
-            my_tank=t1.get_figure()
-            # t1.move('left')
-
-        if keyboard.is_pressed('right'):
-
-            rule=(rule+1)%4
-            t1.direction=rule
-            my_tank=t1.get_figure() # отображение танка
-            # t1.move('right') # изменение отображения танка
-
-        if keyboard.is_pressed('space'):
-            # projectile = t1.projectile
-            whizzbangs.append(t1.shoot())
-
-
-
-        # отрисовка всех точек танка на карте
-        for x, y in my_tank:
-            map[y][x]='#'
-        
-        # отрисовка снаряда
-        for packet in whizzbangs:
-            if packet is not None:
-                xs, ys = packet.get_position()
-                try:
-
-                    if (xs>=0 and xs<w and ys>=0 and ys<h):
-                        map[ys][xs]='@'
-                    else:
-                        packet=None
-                except Exception as e:
-                    print(xs, ys)
-                    print(e)
-
-
-
-        # отрисовка карты
-        for l in map:
-            print(*l)
-
-        map=copy.deepcopy(map_clear)
-        time.sleep(0.06)
-        cls()
-    # except Exception as e:
-    #     ...
-    #     print(e)
