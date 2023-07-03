@@ -93,6 +93,7 @@ class Tank:
         self.direction=0
 
         self.init_sprite()
+        self.angle=0
 
     def init_sprite(self):
         # up
@@ -132,6 +133,17 @@ class Tank:
             (( self.x-1, self.y+1))
         ]
     
+
+    def left(self):
+        self.angle-=1
+        if self.angle==-1:
+            self.angle=3
+        self.direction=self.angle
+
+    def right(self):
+        self.angle=(self.angle+1)%4
+        self.direction=self.angle
+
     def go(self, forward:int=1): # педаль газа
         # if self.x>=1 and self.x<=15 and self.y>=1 and self.y<=16:
         # if forward==-1:
@@ -139,23 +151,27 @@ class Tank:
         if self.direction==0: # перед к северу
             logging.debug('перед к северу')
             if forward>0:
-                if self.y>=2: # and (self.x, self.y-2) not in self.block.blocks and (self.x-1, self.y-2) not in self.block.blocks and (self.x+1, self.y-2) not in self.block.blocks: 
+                logging.debug('north')
+                if self.y>=2 and self.map.battlefield[self.y-2][self.x]=='.' and self.map.battlefield[self.y-1][self.x-1]=='.' and self.map.battlefield[self.y-1][self.x+1]=='.': # and (self.x, self.y-2) not in self.block.blocks and (self.x-1, self.y-2) not in self.block.blocks and (self.x+1, self.y-2) not in self.block.blocks: 
                     # self.y<self.mh-2:
                     self.y-=forward
                     self.init_sprite()
             else:
-                if self.y<self.mh-2: # and (self.x, self.y) not in self.block.blocks: # and (self.x-1, self.y) not in self.block.blocks and (self.x+1, self.y) not in self.block.blocks:
+                logging.debug('south')
+                if self.y<self.mh-2 and self.map.battlefield[self.y+1][self.x]=='.' and self.map.battlefield[self.y+2][self.x-1]=='.' and self.map.battlefield[self.y+2][self.x+1]=='.': # and (self.x, self.y) not in self.block.blocks: # and (self.x-1, self.y) not in self.block.blocks and (self.x+1, self.y) not in self.block.blocks:
                     self.y-=forward
                     self.init_sprite()
 
         if self.direction==1:
             logging.debug('перед к востоку')
             if forward>0:
-                if self.x<self.mw-2:
+                logging.debug('east')
+                if self.x<self.mw-2 and self.map.battlefield[self.y][self.x+2]=='.' and self.map.battlefield[self.y-1][self.x+1]=='.' and self.map.battlefield[self.y+1][self.x+1]=='.':
                     self.x+=forward
                     self.init_sprite()
             else:
-                if self.x>=2:
+                logging.debug('west')
+                if self.x>=2 and self.map.battlefield[self.y][self.x-1]=='.' and self.map.battlefield[self.y-1][self.x-2]=='.' and self.map.battlefield[self.y+1][self.x-2]=='.':
                     self.x+=forward
                     self.init_sprite()
 
@@ -163,13 +179,13 @@ class Tank:
             logging.debug('перед к югу')
             if forward>0: # движение вперед
                 logging.debug('south')
-                if self.y<self.mh-2:
+                if self.y<self.mh-2 and self.map.battlefield[self.y+2][self.x]=='.' and self.map.battlefield[self.y+1][self.x-1]=='.' and self.map.battlefield[self.y+1][self.x+1]=='.':
                     self.y+=forward
                     self.init_sprite()
 
             else: # движение назад
                 logging.debug('north')
-                if self.y>=2: # and (self.x, self.y) not in self.block.blocks and (self.x-1, self.y) not in self.block.blocks and (self.x+1, self.y) not in self.block.blocks:
+                if self.y>=2 and self.map.battlefield[self.y-1][self.x]=='.' and self.map.battlefield[self.y-2][self.x-1]=='.' and self.map.battlefield[self.y-2][self.x+1]=='.': # and (self.x, self.y) not in self.block.blocks and (self.x-1, self.y) not in self.block.blocks and (self.x+1, self.y) not in self.block.blocks:
                     self.y+=forward
                     self.init_sprite()
 
@@ -177,11 +193,13 @@ class Tank:
         if self.direction==3:
             logging.debug('перед к западу')
             if forward > 0:
-                if self.x>=2:
+                logging.debug('west')
+                if self.x>=2 and self.map.battlefield[self.y][self.x-2]=='.' and self.map.battlefield[self.y-1][self.x-1]=='.' and self.map.battlefield[self.y+1][self.x-1]=='.':
                     self.x-=forward
                     self.init_sprite() # отрисовать заново все спрайты с учётом новых координат
             else:
-                if self.x<self.mw-2:
+                logging.debug('east')
+                if self.x<self.mw-2 and self.map.battlefield[self.y][self.x+1]=='.' and self.map.battlefield[self.y-1][self.x+2]=='.' and self.map.battlefield[self.y+1][self.x+2]=='.':
                     self.x-=forward
                     self.init_sprite()
 
@@ -212,11 +230,11 @@ class Game:
         self.b1=Block(self.map, 10, 0)
         self.t1=Tank(self.map, self.b1)
         self.def_image_tank=self.t1.draw_up
-        self.direction=...
+        # self.direction=...
         self.p1=None
         # self.whizzbangs=[]
         self.flameshots=[]
-        self.rule=0
+        # self.rule=0
         self.FPS=15
         # blocks=[]
 
@@ -233,29 +251,31 @@ class Game:
 
             # вперёд 
             if keyboard.is_pressed('up'):
-                self.def_image_tank=self.t1.get_figure()
+                # self.def_image_tank=self.t1.get_figure()
                 self.t1.go(forward=1)
 
             # назад
             if keyboard.is_pressed('down'):
-                self.def_image_tank=self.t1.get_figure()
+                # self.def_image_tank=self.t1.get_figure()
                 self.t1.go(forward=-1)
 
             # поворот налево
             if keyboard.is_pressed('left'):
-                self.rule-=1
-                if self.rule==-1:
-                    self.rule=3
-                self.t1.direction=self.rule
-                self.def_image_tank=self.t1.get_figure()
+                # self.rule-=1
+                # if self.rule==-1:
+                #     self.rule=3
+                # self.t1.direction=self.rule
+                self.t1.left()
+                # self.def_image_tank=self.t1.get_figure()
                 # t1.move('left')
 
             # поворот направо
             if keyboard.is_pressed('right'):
 
-                self.rule=(self.rule+1)%4
-                self.t1.direction=self.rule
-                self.def_image_tank=self.t1.get_figure() # отображение танка
+                # self.rule=(self.rule+1)%4
+                # self.t1.direction=self.rule
+                self.t1.right()
+                # self.def_image_tank=self.t1.get_figure() # отображение танка
                 # t1.move('right') # изменение отображения танка
 
             if keyboard.is_pressed('space'):
@@ -313,6 +333,6 @@ cls=lambda: os.system('clear')
 
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.CRITICAL)
     Game().play()
 
