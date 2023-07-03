@@ -38,16 +38,19 @@ class Projectile:
         self.x=x
         self.y=y
         self.map=map
+        self.start_speed=2
     
     def get_position(self):
         if self.direction==0: 
-            self.y-=1
+            self.y-=1+self.start_speed
         if self.direction==1: 
-            self.x+=1
+            self.x+=1+self.start_speed
         if self.direction==2: 
-            self.y+=1
+            self.y+=1+self.start_speed
         if self.direction==3: 
-            self.x-=1
+            self.x-=1+self.start_speed
+        
+        self.start_speed=0
         
 
 
@@ -81,11 +84,10 @@ class Block:
 
 
 class Tank:
-    def __init__(self, map: Map, block: Block):
+    def __init__(self, map: Map, position: tuple, block: Block):
         self.map=map
         self.block=block
-        self.x=self.map.w//2
-        self.y=self.map.h//2
+        self.x,self.y=position
         
         self.mw=self.map.w
         self.mh=self.map.h
@@ -94,6 +96,8 @@ class Tank:
 
         self.init_sprite()
         self.angle=0
+
+        self.health=10
 
         self.f1i=...
         self.f2i=...
@@ -275,7 +279,17 @@ class Game:
     def __init__(self):
         self.map=Map()
         self.b1=Block(self.map, 10, 0)
-        self.t1=Tank(self.map, self.b1)
+        self.t1=Tank(self.map, (self.map.w//2, self.map.h//2), self.b1)
+
+
+
+        self.enemies=[]
+        self.t2=Tank(self.map, (1,1), self.b1)
+        self.t3=Tank(self.map, (self.map.w-2,1), self.b1)
+
+        self.enemies.append(self.t2)
+        self.enemies.append(self.t3)
+
         self.flameshots=[]
         self.FPS=15
         self.run=True
@@ -284,6 +298,9 @@ class Game:
         while self.run:
             # отрисовка преград
             self.b1.draw()
+
+            for enemy in self.enemies:
+                if enemy is not None: enemy.draw()
 
             # вперёд 
             if keyboard.is_pressed('up'):
@@ -312,6 +329,8 @@ class Game:
             # отрисовка всех точек танка на карте
             self.t1.draw()
 
+
+
             # отрисовка снаряда
             for i in range(len(self.flameshots)):
                 if self.flameshots[i] is not None:
@@ -323,6 +342,20 @@ class Game:
                             logging.warning(f'ys: {ys}, xs: {xs}')
                             # sys.exit()
                             self.b1.blocks.remove((xs, ys))
+                            self.flameshots[i]=None
+                            break
+                        elif self.map.battlefield[ys][xs]=='#':
+                            # self.b1.blocks.remove((xs, ys))
+
+
+                            for i in range(len(self.enemies)):
+                                if (xs,ys) in self.enemies[i].get_figure():
+                                    self.enemies[i].health-=1
+                                    if self.enemies[i].health==0:
+                                        self.enemies[i]=None
+                                    break
+                            
+                            logging.warning(f'ys: {ys}, xs: {xs}')
                             self.flameshots[i]=None
                             break
                         else:
@@ -337,7 +370,7 @@ class Game:
             self.map.show()
             logging.debug(f'{self.t1.x}, {self.t1.y}, {self.b1.blocks}, {self.t1.direction}')
             logging.debug(f'{self.t1.angle}, {self.t1.f1i}, {self.t1.f2i}, {self.t1.r1i}')
-
+            logging.warning(f'{self.t2.get_figure() if self.t2 is not None else "death"}')
             # self.map=copy.deepcopy(self.map_clear)
             self.map.update()
             time.sleep(1/self.FPS)
