@@ -414,12 +414,15 @@ class Game:
         # self.enemies[0].direction=3
 
 
-
+        self.fine=True
         self.FPS=20
         self.run=True
 
     def __del__(self):
-        print('Game over')
+        if not self.fine:
+            print('Game over')
+        else:
+            print('You win')
 
     def play(self):
         while self.run:
@@ -461,6 +464,10 @@ class Game:
                 if enemy is not None: enemy.update_map()
 
 
+            if len(self.enemies)==0:
+                self.fine=True
+                self.run=False
+
             # отрисовка снаряда
             for i in range(len(self.flameshots)):
                 if self.flameshots[i] is not None:
@@ -490,6 +497,7 @@ class Game:
                                 self.player.health-=1
                                 if self.player.health==0:
                                     # print('Game over!')
+                                    self.fine=False
                                     self.run=False
                                     
                                 
