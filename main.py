@@ -523,9 +523,13 @@ class Game:
             # self.map=copy.deepcopy(self.map_clear)
             self.map.update()
             time.sleep(1/self.FPS)
-            cls()
+            try:
+                clear()
+            except:
+                cls()
 
-cls=lambda: os.system('clear')
+cls=lambda: os.system('cls')
+clear=lambda: os.system('clear')
 
 
 if __name__=='__main__':
