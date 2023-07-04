@@ -286,7 +286,6 @@ class Bot(Tank):
         
     
     def vision(self, direction:int):
-
         # будет работать только на установленном расстоянии
         if abs(self.x-self.enemy.x)<=self.view_radius and abs(self.y-self.enemy.y)<=self.view_radius:
         
@@ -389,7 +388,31 @@ class Bot(Tank):
         self.autopilot()
 
 
+class Player(Tank):
+    def __init__(self, map:Map, position:tuple[int,int], block:Block, flameshots:list):
+        super().__init__(map, position, block)
+        self.flameshots=flameshots
 
+    def up(self):
+        if keyboard.is_pressed('up'):
+            self.go(forward=1)
+    
+    def down(self):
+        if keyboard.is_pressed('down'):
+            self.go(forward=-1)
+
+    def left(self):
+        if keyboard.is_pressed('left'):
+            super().left()
+
+    def right(self):
+        if keyboard.is_pressed('right'):
+            super().right()
+    
+    def fire(self):
+        if keyboard.is_pressed('space'):
+            # projectile = t1.projectile
+            self.flameshots.append(self.shoot())
 
     
 
@@ -397,12 +420,15 @@ class Bot(Tank):
 
 class Game:
     def __init__(self):
+
+
+        self.flameshots=[]
         self.map=Map(30, 30)
         self.b1=Block(self.map, 10, 0)
-        self.player=Tank(self.map, (self.map.w//2, self.map.h//2), self.b1)
+        self.player=Player(self.map, (self.map.w//2, self.map.h//2), self.b1, self.flameshots)
 
         self.player.get_info() # получаем данные об окружении
-        self.flameshots=[]
+
         self.enemies=[
             # self.player,
             Bot(self.map, (1,1), self.b1, self.flameshots, self.player, True),
@@ -433,25 +459,18 @@ class Game:
                 if enemy is not None: enemy.draw()
 
             # вперёд 
-            if keyboard.is_pressed('up'):
-                self.player.go(forward=1)
+            self.player.up()
             
             # назад
-            if keyboard.is_pressed('down'):
-                self.player.go(forward=-1)
+            self.player.down()
 
             # поворот влево
-            if keyboard.is_pressed('left'):
-                self.player.left()
-                # self.flameshots.append(self.enemies[0].shoot())
+            self.player.left()
 
             # поворот вправо
-            if keyboard.is_pressed('right'):
-                self.player.right()
+            self.player.right()
 
-            if keyboard.is_pressed('space'):
-                # projectile = t1.projectile
-                self.flameshots.append(self.player.shoot())
+            self.player.fire()
 
 
 
@@ -481,6 +500,7 @@ class Game:
                             self.b1.blocks.remove((xs, ys))
                             self.flameshots[i]=None
                             break
+
                         elif self.map.battlefield[ys][xs]=='#': # при попадении снаряда в танк
                             # self.b1.blocks.remove((xs, ys))
 
