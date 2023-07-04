@@ -56,6 +56,8 @@ class Projectile:
 
         return self.x, self.y
 
+    def __del__(self):
+        logging.debug('снаряд унечтожен')
 
 
 class Block:
@@ -179,12 +181,12 @@ class Tank:
             self.r1i=self.map.battlefield[self.y][self.x+1]
 
     def left(self):
-        if self.f1i=='.' and self.f2i=='.' and self.r1i=='.':
+        if self.f1i=='.' and self.f2i=='.' and self.r1i=='.': #нет ли каких-либо ограничений для поворота
             self.angle-=1
             if self.angle==-1:
                 self.angle=3
             
-            self.get_info()
+            self.get_info() # при повороте обновляем данные
             self.direction=self.angle
 
     def right(self):
@@ -272,26 +274,54 @@ class Tank:
         return Projectile(self.map, self.direction, self.x, self.y)
         # return self.x, self.y, self.direction # возвращаем позицию выстрела и направление
 
+    def __del__(self):
+        logging.debug('Убит')
+        # sys.exit()
+
+
+class Bot(Tank):
+    def __init__(self, map:Map, position:tuple[int,int], block:Block, whizzbang:list):
+        super().__init__(map, position, block)
+        self.get_info()
+        self.whizzbang=whizzbang
+        
+    
+    def vision(self):
+        ...
+    
+    def autopilot(self):
+        self.left()
+        # self.whizzbang.append(self.shoot())
+        self.go()
+    
+    def draw(self):
+        self.autopilot()
+        super().draw()
+
+
+
+
+    
 
 
 
 class Game:
     def __init__(self):
-        self.map=Map()
+        self.map=Map(30, 30)
         self.b1=Block(self.map, 10, 0)
-        self.t1=Tank(self.map, (self.map.w//2, self.map.h//2), self.b1)
+        self.player=Tank(self.map, (self.map.w//2, self.map.h//2), self.b1)
 
-
-
-        self.enemies=[]
-        self.t2=Tank(self.map, (1,4), self.b1)
-        self.t3=Tank(self.map, (self.map.w-2,4), self.b1)
-
-        self.enemies.append(self.t2)
-        self.enemies.append(self.t3)
-
+        self.player.get_info() # получаем данные об окружении
         self.flameshots=[]
-        self.FPS=10
+        self.enemies=[
+            Bot(self.map, (1,4), self.b1, self.flameshots),
+            # Tank(self.map, (self.map.w-2,4), self.b1)
+        ]
+        self.enemies[0].direction=2
+
+
+
+        self.FPS=20
         self.run=True
 
     def play(self):
@@ -304,30 +334,31 @@ class Game:
 
             # вперёд 
             if keyboard.is_pressed('up'):
-                self.t1.go(forward=1)
+                self.player.go(forward=1)
             
             # назад
             if keyboard.is_pressed('down'):
-                self.t1.go(forward=-1)
+                self.player.go(forward=-1)
 
             # поворот влево
             if keyboard.is_pressed('left'):
-                self.t1.left()
+                self.player.left()
+                # self.flameshots.append(self.enemies[0].shoot())
 
             # поворот вправо
             if keyboard.is_pressed('right'):
-                self.t1.right()
+                self.player.right()
 
             if keyboard.is_pressed('space'):
                 # projectile = t1.projectile
-                self.flameshots.append(self.t1.shoot())
+                self.flameshots.append(self.player.shoot())
 
 
 
 
 
             # отрисовка всех точек танка на карте
-            self.t1.draw()
+            self.player.draw()
 
 
 
@@ -353,7 +384,7 @@ class Game:
                                     if (xs,ys) in self.enemies[k].get_figure():
                                         self.enemies[k].health-=1
                                         if self.enemies[k].health==0:
-                                            self.enemies[k]=None
+                                            self.enemies.remove(self.enemies[k])
                                         break
                             
                             logging.warning(f'ys: {ys}, xs: {xs}')
@@ -369,9 +400,9 @@ class Game:
 
             # отрисовка карты
             self.map.show()
-            logging.debug(f'{self.t1.x}, {self.t1.y}, {self.b1.blocks}, {self.t1.direction}')
-            logging.debug(f'{self.t1.angle}, {self.t1.f1i}, {self.t1.f2i}, {self.t1.r1i}')
-            logging.warning(f'{self.t2.get_figure() if self.t2 is not None else "death"}')
+            logging.debug(f'{self.player.x}, {self.player.y}, {self.b1.blocks}, {self.player.direction}')
+            logging.debug(f'{self.player.angle}, {self.player.f1i}, {self.player.f2i}, {self.player.r1i}')
+            # logging.warning(f'{self.t2.get_figure() if self.t2 is not None else "death"}')
             # self.map=copy.deepcopy(self.map_clear)
             self.map.update()
             time.sleep(1/self.FPS)
@@ -381,6 +412,6 @@ cls=lambda: os.system('clear')
 
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.CRITICAL)
+    logging.basicConfig(level=logging.DEBUG)
     Game().play()
 
