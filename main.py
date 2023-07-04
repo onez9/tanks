@@ -284,19 +284,47 @@ class Bot(Tank):
         super().__init__(map, position, block)
         self.get_info()
         self.whizzbang=whizzbang
+        self.last_direct=2
         
     
     def vision(self):
         ...
     
     def autopilot(self):
-        self.left()
+        # self.left()
         # self.whizzbang.append(self.shoot())
-        self.go()
+        # self.go()
+        # if self.y==self.mh-2 and self.last_direct==2:
+        #     self.left()
+        #     self.last_direct=3
+        
+        
+        
+        count=self.y+2
+        fire=False
+        if self.direction==2:
+            while count<self.mh:
+                logging.debug(self.map.battlefield[self.y][self.x])
+                # logging.debug(self.x)
+                if self.map.battlefield[count][self.x]=='#':
+                    fire=True
+
+                count+=1
+            if fire:
+                # self.whizzbang.append(self.shoot())
+                self.go()
+
+
+            fire=False
+
+        # sys.exit()
     
-    def draw(self):
+    def draw(self): # функция зомби
         self.autopilot()
         super().draw()
+
+    def update_map(self):
+        self.autopilot()
 
 
 
@@ -357,8 +385,9 @@ class Game:
 
 
 
-            # отрисовка всех точек танка на карте
+            # отрисовка всех точек танка игрока на карте
             self.player.draw()
+            self.enemies[0].update_map()
 
 
 
@@ -367,7 +396,7 @@ class Game:
                 if self.flameshots[i] is not None:
                     xs, ys = self.flameshots[i].get_position()
                     if xs>=0 and xs<self.map.w and ys>=0 and ys<self.map.h:
-                        if self.map.battlefield[ys][xs]=='%':
+                        if self.map.battlefield[ys][xs]=='%': # при попадении снаряда в преграду
                             #self.map.battlefield[ys][xs]='.'
                             logging.warning(f'{self.b1.blocks}')
                             logging.warning(f'ys: {ys}, xs: {xs}')
@@ -375,7 +404,7 @@ class Game:
                             self.b1.blocks.remove((xs, ys))
                             self.flameshots[i]=None
                             break
-                        elif self.map.battlefield[ys][xs]=='#':
+                        elif self.map.battlefield[ys][xs]=='#': # при попадении снаряда в танк
                             # self.b1.blocks.remove((xs, ys))
 
 
@@ -391,7 +420,7 @@ class Game:
                             self.flameshots[i]=None
                             break
                         else:
-                            self.map.battlefield[ys][xs]='@'
+                            self.map.battlefield[ys][xs]='@' # при отсутствии ограничений
                     else:
                         self.flameshots[i]=None
 
