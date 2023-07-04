@@ -3,7 +3,7 @@ import os
 # import pygame # listen gui keys
 import time
 import keyboard # listen keys
-import random 
+from random import randint, choice
 import itertools
 import copy
 import sys
@@ -63,19 +63,13 @@ class Projectile:
 class Block:
     def __init__(self, map:Map, x:int, y:int):
         self.x=x
-        self.y=y
-        self.blocks = [
-            ((self.x, self.y)),
-            ((self.x, self.y+1)),
-            ((self.x, self.y+2)),
-            ((self.x, self.y+3)),
-            ((self.x, self.y+4)),
-            ((self.x, self.y+5)),
-            ((self.x, self.y+6)),
-            ((self.x, self.y+7)),
-            ((self.x, self.y+8)),
-        ]
+        self.y=0
+        self.blocks=[]
+
+
         self.map=map
+        for i in range(2):
+            self.blocks.append((self.x, self.y+i))
 
     def draw(self):
         for x, y in self.blocks:
@@ -100,6 +94,7 @@ class Tank:
         self.angle=0
 
         self.health=10
+        self.speed=10
 
         self.f1i=...
         self.f2i=...
@@ -280,50 +275,117 @@ class Tank:
 
 
 class Bot(Tank):
-    def __init__(self, map:Map, position:tuple[int,int], block:Block, whizzbang:list):
+    def __init__(self, map:Map, position:tuple[int,int], block:Block, whizzbang:list, player:Tank, enable_shoot=False):
         super().__init__(map, position, block)
         self.get_info()
         self.whizzbang=whizzbang
-        self.last_direct=2
+        self.view_radius=9
+        self.enemy=player
+        self.rulet=False
+        self.enable_shoot=enable_shoot
         
     
-    def vision(self):
-        ...
+    def vision(self, direction:int):
+
+        # будет работать только на установленном расстоянии
+        if abs(self.x-self.enemy.x)<=self.view_radius and abs(self.y-self.enemy.y)<=self.view_radius:
+        
+            if abs(self.x-self.enemy.x) > abs(self.y-self.enemy.y) or self.rulet==True: # выбираем наименьшее расстояние
+                self.rulet=True # и доделываем до конца
+
+                if self.y < self.enemy.y:
+                    self.direction=2
+                    self.go()
+                
+                if self.y > self.enemy.y:
+                    self.direction=0
+                    self.go()
+
+
+                if self.y==self.enemy.y:
+                    if self.x < self.enemy.x:
+                        self.direction=1
+                    
+                    if self.x > self.enemy.x:
+                        self.direction=3
+
+                    if self.enable_shoot:
+                        self.whizzbang.append(self.shoot())
+
+            if abs(self.x-self.enemy.x) <= abs(self.y-self.enemy.y) or self.rulet==False:
+                self.rulet=False
+                
+                if self.x < self.enemy.x:
+                    self.direction=1
+                    self.go()
+                
+                if self.x > self.enemy.x:
+                    self.direction=3
+                    self.go()
+                
+                if self.x==self.enemy.x:
+                    if self.y < self.enemy.y:
+                        self.direction=2
+                    
+                    if self.y > self.enemy.y:
+                        self.direction=0
+
+                    if self.enable_shoot:
+                        self.whizzbang.append(self.shoot())
+        else:
+            self.rulet=False
+
+
+
+
+
     
+    def fire(self, direction:int):
+
+        """
+        count=2
+        offset=count
+        while count <= self.view_radius+offset:
+            # logging.debug(self.map.battlefield[self.y][self.x])
+            if self.y-count>=0:
+                if self.map.battlefield[self.y-count][self.x]=='#': #up
+                    self.direction=0
+                    self.go()
+                    break
+
+            if self.x+count<=self.mw-1:
+                if self.map.battlefield[self.y][self.x+count]=='#': #right
+                    self.direction=1
+                    self.go()
+                    break
+
+            if self.y+count<=self.mh-1:
+                if self.map.battlefield[self.y+count][self.x]=='#': #down
+                    self.direction=2
+                    self.go()
+                    break
+
+            if self.x-count>=0:
+                if self.map.battlefield[self.y][self.x-count]=='#': #left
+                    self.direction=3
+                    self.go()
+                    break
+
+            count+=1
+        """
+
+  
+
+
     def autopilot(self):
-        # self.left()
-        # self.whizzbang.append(self.shoot())
-        # self.go()
-        # if self.y==self.mh-2 and self.last_direct==2:
-        #     self.left()
-        #     self.last_direct=3
+        self.vision(self.direction)
         
-        
-        
-        count=self.y+2
-        fire=False
-        if self.direction==2:
-            while count<self.mh:
-                logging.debug(self.map.battlefield[self.y][self.x])
-                # logging.debug(self.x)
-                if self.map.battlefield[count][self.x]=='#':
-                    fire=True
-
-                count+=1
-            if fire:
-                # self.whizzbang.append(self.shoot())
-                self.go()
-
-
-            fire=False
-
-        # sys.exit()
     
     def draw(self): # функция зомби
         self.autopilot()
         super().draw()
 
-    def update_map(self):
+    def update_map(self): # вызывается чтобы нарисовать игрока на карте противника
         self.autopilot()
 
 
@@ -342,15 +404,22 @@ class Game:
         self.player.get_info() # получаем данные об окружении
         self.flameshots=[]
         self.enemies=[
-            Bot(self.map, (1,4), self.b1, self.flameshots),
+            # self.player,
+            Bot(self.map, (1,1), self.b1, self.flameshots, self.player, True),
+            Bot(self.map, (28,28), self.b1, self.flameshots, self.player),
+            Bot(self.map, (28,1), self.b1, self.flameshots, self.player),
+            Bot(self.map, (1,28), self.b1, self.flameshots, self.player),
             # Tank(self.map, (self.map.w-2,4), self.b1)
         ]
-        self.enemies[0].direction=2
+        # self.enemies[0].direction=3
 
 
 
         self.FPS=20
         self.run=True
+
+    def __del__(self):
+        print('Game over')
 
     def play(self):
         while self.run:
@@ -387,8 +456,9 @@ class Game:
 
             # отрисовка всех точек танка игрока на карте
             self.player.draw()
-            self.enemies[0].update_map()
-
+            
+            for enemy in self.enemies:
+                if enemy is not None: enemy.update_map()
 
 
             # отрисовка снаряда
@@ -416,6 +486,14 @@ class Game:
                                             self.enemies.remove(self.enemies[k])
                                         break
                             
+                            if (xs,ys) in self.player.get_figure():
+                                self.player.health-=1
+                                if self.player.health==0:
+                                    # print('Game over!')
+                                    self.run=False
+                                    
+                                
+
                             logging.warning(f'ys: {ys}, xs: {xs}')
                             self.flameshots[i]=None
                             break
@@ -429,6 +507,8 @@ class Game:
 
             # отрисовка карты
             self.map.show()
+
+            # if self.player is not None:
             logging.debug(f'{self.player.x}, {self.player.y}, {self.b1.blocks}, {self.player.direction}')
             logging.debug(f'{self.player.angle}, {self.player.f1i}, {self.player.f2i}, {self.player.r1i}')
             # logging.warning(f'{self.t2.get_figure() if self.t2 is not None else "death"}')
@@ -441,6 +521,6 @@ cls=lambda: os.system('clear')
 
 
 if __name__=='__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.CRITICAL)
     Game().play()
 
