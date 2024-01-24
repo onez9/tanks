@@ -432,9 +432,9 @@ class Game:
         self.enemies=[
             # self.player,
             Bot(self.map, (1,1), self.b1, self.flameshots, self.player, True),
-            Bot(self.map, (28,28), self.b1, self.flameshots, self.player),
-            Bot(self.map, (28,1), self.b1, self.flameshots, self.player),
-            Bot(self.map, (1,28), self.b1, self.flameshots, self.player),
+            Bot(self.map, (28,28), self.b1, self.flameshots, self.player, True),
+            Bot(self.map, (28,1), self.b1, self.flameshots, self.player, True),
+            Bot(self.map, (1,28), self.b1, self.flameshots, self.player, True),
             # Tank(self.map, (self.map.w-2,4), self.b1)
         ]
         # self.enemies[0].direction=3
@@ -535,6 +535,10 @@ class Game:
 
             # отрисовка карты
             self.map.show()
+            print(f'my life: {self.player.health}')
+
+            for i, enemy in enumerate(self.enemies):
+                print(i, enemy.health)
 
             # if self.player is not None:
             logging.debug(f'{self.player.x}, {self.player.y}, {self.b1.blocks}, {self.player.direction}')
